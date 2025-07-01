@@ -59,6 +59,9 @@ jobs:
           echo "=== .docker directory contents ==="
           ls -la .docker/
           
+          # BACKUP .docker directory before prepare script
+          cp -r .docker /tmp/.docker-backup
+          
           chmod +x ./.docker/prepare.sh
           ./.docker/prepare.sh ${{ needs.check_version.outputs.seanime_version }}
           
@@ -66,6 +69,12 @@ jobs:
           ls -la
           echo "=== .docker directory contents ==="
           ls -la .docker/ || echo ".docker directory missing!"
+          
+          # RESTORE .docker directory
+          cp -r /tmp/.docker-backup .docker
+          
+          echo "=== AFTER restoring .docker ==="
+          ls -la .docker/
         shell: bash
         
       - name: Upload prepared files
@@ -86,24 +95,6 @@ jobs:
         with:
           name: prepared-repo
           path: .
-          
-      - name: Debug directory structure
-        run: |
-          echo "=== Current directory contents ==="
-          ls -la
-          echo "=== Looking for .docker ==="
-          find . -name ".docker" -type d || echo "No .docker directory found"
-          echo "=== Looking for Dockerfile ==="
-          find . -name "Dockerfile" || echo "No Dockerfile found"
-          
-      - name: Debug directory structure
-        run: |
-          echo "=== Current directory contents ==="
-          ls -la
-          echo "=== Looking for .docker ==="
-          find . -name ".docker" -type d || echo "No .docker directory found"
-          echo "=== Looking for Dockerfile ==="
-          find . -name "Dockerfile" || echo "No Dockerfile found"
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
