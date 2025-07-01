@@ -6,6 +6,10 @@ on:
   schedule:
     - cron: '0 0 * * *'  # Run daily to check for new releases
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   check_and_build:
     name: Check for new release and build Docker image
