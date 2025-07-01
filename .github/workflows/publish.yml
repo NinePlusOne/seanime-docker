@@ -29,7 +29,10 @@ jobs:
         id: check_build
         run: |
           CURRENT_VERSION=$(cat .version 2>/dev/null || echo "none")
-          if [ "${{ steps.seanime_release.outputs.LATEST_RELEASE }}" != "${CURRENT_VERSION}" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "BUILD_NEEDED=true" >> $GITHUB_OUTPUT
+            echo "Manual trigger detected. Force building."
+          elif [ "${{ steps.seanime_release.outputs.LATEST_RELEASE }}" != "${CURRENT_VERSION}" ]; then
             echo "BUILD_NEEDED=true" >> $GITHUB_OUTPUT
             echo "New version detected. Build needed."
           else
