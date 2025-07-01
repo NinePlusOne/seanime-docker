@@ -54,27 +54,8 @@ jobs:
         
       - name: Prepare the repository
         run: |
-          echo "=== BEFORE prepare script ==="
-          ls -la
-          echo "=== .docker directory contents ==="
-          ls -la .docker/
-          
-          # BACKUP .docker directory before prepare script
-          cp -r .docker /tmp/.docker-backup
-          
           chmod +x ./.docker/prepare.sh
           ./.docker/prepare.sh ${{ needs.check_version.outputs.seanime_version }}
-          
-          echo "=== AFTER prepare script ==="
-          ls -la
-          echo "=== .docker directory contents ==="
-          ls -la .docker/ || echo ".docker directory missing!"
-          
-          # RESTORE .docker directory
-          cp -r /tmp/.docker-backup .docker
-          
-          echo "=== AFTER restoring .docker ==="
-          ls -la .docker/
         shell: bash
         
       - name: Upload prepared files
@@ -83,6 +64,7 @@ jobs:
           name: prepared-repo
           path: .
           retention-days: 1
+          include-hidden-files: true
 
   build-amd64:
     name: Build AMD64
