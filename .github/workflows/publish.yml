@@ -54,8 +54,15 @@ jobs:
         
       - name: Prepare the repository
         run: |
+          # Backup .docker directory first
+          cp -r .docker /tmp/.docker-backup
+          
+          # Make script executable and run it
           chmod +x ./.docker/prepare.sh
           ./.docker/prepare.sh ${{ needs.check_version.outputs.seanime_version }}
+          
+          # Restore .docker directory (in case seanime repo overwrote it)
+          cp -r /tmp/.docker-backup .docker
         shell: bash
         
       - name: Upload prepared files
