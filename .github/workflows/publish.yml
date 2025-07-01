@@ -54,15 +54,18 @@ jobs:
         
       - name: Prepare the repository
         run: |
-          # Backup .docker directory first
-          cp -r .docker /tmp/.docker-backup
+          echo "=== BEFORE prepare script ==="
+          ls -la
+          echo "=== .docker directory contents ==="
+          ls -la .docker/
           
-          # Make script executable and run it
           chmod +x ./.docker/prepare.sh
           ./.docker/prepare.sh ${{ needs.check_version.outputs.seanime_version }}
           
-          # Restore .docker directory (in case seanime repo overwrote it)
-          cp -r /tmp/.docker-backup .docker
+          echo "=== AFTER prepare script ==="
+          ls -la
+          echo "=== .docker directory contents ==="
+          ls -la .docker/ || echo ".docker directory missing!"
         shell: bash
         
       - name: Upload prepared files
@@ -83,6 +86,24 @@ jobs:
         with:
           name: prepared-repo
           path: .
+          
+      - name: Debug directory structure
+        run: |
+          echo "=== Current directory contents ==="
+          ls -la
+          echo "=== Looking for .docker ==="
+          find . -name ".docker" -type d || echo "No .docker directory found"
+          echo "=== Looking for Dockerfile ==="
+          find . -name "Dockerfile" || echo "No Dockerfile found"
+          
+      - name: Debug directory structure
+        run: |
+          echo "=== Current directory contents ==="
+          ls -la
+          echo "=== Looking for .docker ==="
+          find . -name ".docker" -type d || echo "No .docker directory found"
+          echo "=== Looking for Dockerfile ==="
+          find . -name "Dockerfile" || echo "No Dockerfile found"
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
